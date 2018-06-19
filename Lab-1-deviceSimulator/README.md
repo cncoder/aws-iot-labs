@@ -27,83 +27,13 @@ In this demo, your must create Thing that name is *"raspberry<XX>"*
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/attach-cert-thing.html](http://docs.aws.amazon.com/iot/latest/developerguide/attach-policy-to-certificate.html)
 
-## Configure Your Raspberry Pi
-
-After the Raspberry Pi system has been burned, connect the raspberry to the network, find the Raspberry Pi IP address, and log in to the Raspberry Pi using VNC or SSH.
-
-Raspberry Pi default SSH account password:
-
-**Username：pi**
-
-**Password：raspberry**
-
-
-After login to Raspberry Pi, please install Git
-
-```
-sudo apt-get install git
-```
-
-
-Download the device code：
-
-```
-git clone https://github.com/cncoder/aws-iot-labs.git
-```
-
-Switch to the aws-iot-raspberrypi directory
-
-```
-cd aws-iot-labs/cert
-```
-
-
-## ************************** 非常重要提示*********************************
-
-## **确保每次输入的事物名称（Thing Name）前后一致 （raspberryXX）**
-
-## ************************** 非常重要提示*********************************
-
-
-创建安全策略(**raspberryXX**):
-
-策略名称，事物名称中输入**raspberryXX** **，**事物命名规则为raspberryXX, XX随机两位数字就可以了，假设是在实际生产中的序列号。
-
-```
-aws iot create-policy --policy-name "raspberryxx" --policy-document '{"Version": "2012-10-17","Statement": [{"Effect": "Allow","Action": "iot:*","Resource": "*"}]}'
-```
-
-创建设备影子(您可以理解为真实物理设备在云上的 一个影子或者映射)：
-
-```
-aws iot create-thing --thing-name  "raspberryXX" 
-```
-
-使用AWS Cli创建设备证书，激活并记录控制台返回的证书 ARN (certificateArn)
-
-```
-aws iot create-keys-and-certificate --set-as-active --certificate-pem-outfile certificate.pem --private-key-outfile private.pem.key | grep certificateArn
-```
-
-为证书附加安全策略和设备影子，这里的—principal替换成上一步记录下来的证书ARN, --policy-name使用您自己的编号
-
-```
-aws iot attach-principal-policy --policy-name "raspberryXX" --principal arn:XXXXX:XXXXX:cert/XXXXXXXX
-```
-
-```
-aws iot attach-thing-principal --thing-name "raspberryXX" --principal arn:XXXXX:XXXXX:cert/XXXXXXXX
-```
-
-下载 AWS IoT 平台 CA 证书
-
-```
-wget -cO- https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem > rootCA.cert
-```
-
 完成这一节后，您会在本地cert 文件中看到三个文件(certificate.pem, private.pem.key和rootCA.cert)，这三个文件将用于后续连接到AWS IoT平台。此外，还可以在AWS IoT 控制台看到您所创建的证书，安全策略，设备影子。AWS 为不同需求的客户提供了不同的解决方案，在实际生产中，您可以选用熟悉的编程语言SDK，根据自己的情况使用不同的设备注册方式。
 
-## 把传感器和二极管接入到树莓派
+Optionally you can put your cert file in the same directory: ~/cert
+
+## Configure Your Raspberry Pi
+
+#### 把传感器和二极管接入到树莓派
 
 * 首先介绍一下DHT11：
 
@@ -129,6 +59,47 @@ DHT11接线说明
 ![GPIO3.png](./images/GPIO3.png)
 
 请注意二极管分为正负极，长的一端为正极，短的一端为负极。
+
+### Copy Cert file to raspberry pi 
+
+After the Raspberry Pi system has been burned, connect the raspberry to the network, find the Raspberry Pi IP address, and log in to the Raspberry Pi using VNC or SSH.
+
+Raspberry Pi default SSH account password:
+
+**Username：pi**
+
+**Password：raspberry**
+
+Now you can use rsync to move your cert file to your raspberry pi.
+
+```
+rsync -r ~/cert/ pi@<your_ip_address>:~/
+```
+
+After login to Raspberry Pi, please install Git
+
+```
+sudo apt-get install git
+```
+
+Download the device code：
+
+```
+cd ~
+rm -r aws-iot-labs (option)
+git clone https://github.com/cncoder/aws-iot-labs.git
+```
+
+Copy cert file to the aws-iot-labs/Lab-1-deviceSimulator directory
+
+```
+mv ~/cert ~/aws-iot-labs/Lab-1-deviceSimulator
+```
+
+### 🚨⚠️🥁🎺 ULTRA SUPER IMPORTANT SPECIAL NOTE PLEASE READ THIS 🎺🥁⚠️🚨 ###
+
+Make sure that every time you enter the same thing name (Thing Name) (raspberry<XX>)
+
 
 ## 把树莓派接入到AWS IoT
 
