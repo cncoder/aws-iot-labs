@@ -3,13 +3,23 @@
 
 You should create resource on AWS console.
 
-*  Register a Device in the Thing Registry
+###  Register a Device in the Thing Registry
 
-In this demo, your must create Thing that name is *"raspberry<XX>"*
+In this demo, your must create Thing that name is **"raspberry\<XX\>"**
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/register-device.html](http://docs.aws.amazon.com/iot/latest/developerguide/register-device.html)
 
-* Create and Activate a Device Certificate and Active it.
+![create things](./images/create-things1.jpeg)
+
+![create things](./images/create-things2.jpeg)
+
+### Create an AWS IoT Policy
+
+[http://docs.aws.amazon.com/iot/latest/developerguide/create-iot-policy.html](http://docs.aws.amazon.com/iot/latest/developerguide/create-iot-policy.html)
+
+![create policy](./images/create-policy.jpeg)
+
+### Create and Activate a Device Certificate and Active it.
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/create-device-certificate.html](http://docs.aws.amazon.com/iot/latest/developerguide/create-device-certificate.html)
 > download all certificates, some certificates won't be allow to download after this page close.
@@ -18,20 +28,17 @@ In this demo, your must create Thing that name is *"raspberry<XX>"*
 
 After completing this section, you should above three files (certificate.pem, private.pem.key, and rootCA.cert) in the local ~/cert file, which will be used for subsequent connections to the AWS IoT platform. In addition, you can see the certificate, security policy, device shadow you created in the AWS IoT console. AWS provides different solutions for customers with different needs. In actual production, you can use a familiar programming language SDK to use different device registration methods according to your own situation.
 
-* Create an AWS IoT Policy
-
-[http://docs.aws.amazon.com/iot/latest/developerguide/create-iot-policy.html](http://docs.aws.amazon.com/iot/latest/developerguide/create-iot-policy.html)
-
-* Attach an AWS IoT Policy to a Device Certificate
+### Attach an AWS IoT Policy to a Device Certificate
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/attach-policy-to-certificate.html](http://docs.aws.amazon.com/iot/latest/developerguide/attach-policy-to-certificate.html)
 
-* Attach a Certificate to a Thing
+![create certificates](./images/attach-policy1.jpeg)
+
+![create certificates](./images/attach-policy2.jpeg)
+
+### Optionally: Attach a Certificate to a Thing
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/attach-cert-thing.html](http://docs.aws.amazon.com/iot/latest/developerguide/attach-policy-to-certificate.html)
-
-
-Optionally you can put your cert file in the same directory: ~/cert
 
 ## Configure Your Raspberry Pi
 
@@ -122,12 +129,13 @@ Modify the ThingShadowAgent.py file configuration, we will edit this file via vi
 ```
 vi ThingShadowAgent.py
 ```
+![Connect AWS IoT](./images/running.jpg)
 
 endpoint：Login to your AWS IoT console, Select the settings on the left. The endpoint on the page is the endpoint. This is unique for each area of each AWS account.
 
-thingName：**raspberry<XX>**
+thingName：**raspberry\<XX\>**
 
-topic：”**raspberry<XX>/sensor/data”**
+topic：”**raspberry\<XX\>/sensor/data”**
 
 Running ThingShadowAgent.py
 
