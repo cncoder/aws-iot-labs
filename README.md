@@ -10,6 +10,7 @@ Examples using AWS IoT (Internet of Things)
 
 ### Lab3 (Rule)
 
+Be continued 
 
 #### IoT动手实验 - 树莓派控制
 
