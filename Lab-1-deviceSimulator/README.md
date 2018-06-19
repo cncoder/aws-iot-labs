@@ -26,7 +26,7 @@ In this demo, your must create Thing that name is **"raspberry\<XX\>"**
 
 ![create certificates](./images/create-cert.jpg)
 
-After completing this section, you should above three files (certificate.pem, private.pem.key, and rootCA.cert) in the local ~/cert file, which will be used for subsequent connections to the AWS IoT platform. In addition, you can see the certificate, security policy, device shadow you created in the AWS IoT console. AWS provides different solutions for customers with different needs. In actual production, you can use a familiar programming language SDK to use different device registration methods according to your own situation.
+After completing this section, you should save above three directory (certificate.pem, private.pem.key, and rootCA.cert) in the local ~/cert file, which will be used for subsequent connections to the AWS IoT platform. In addition, you can see the certificate, security policy, device shadow you created in the AWS IoT console. AWS provides different solutions for customers with different needs. Actually, in production, you can use a familiar programming language SDK to use different device registration methods according to your own situation.
 
 ### Attach an AWS IoT Policy to a Device Certificate
 
@@ -131,11 +131,13 @@ vi ThingShadowAgent.py
 ```
 ![Connect AWS IoT](./images/running.jpg)
 
-endpoint：Login to your AWS IoT console, Select the settings on the left. The endpoint on the page is the endpoint. This is unique for each area of each AWS account.
+**endpoint**：Login to your AWS IoT console, Select the settings on the left. The endpoint on the page is the endpoint. This is unique for each area of each AWS account.
 
-thingName：**raspberry\<XX\>**
+![Connect AWS IoT](./images/endpoint.jpeg)
 
-topic：”**raspberry\<XX\>/sensor/data”**
+**thingName**：**raspberry\<XX\>**
+
+**topic**：”**raspberry\<XX\>/sensor/data”**
 
 Running ThingShadowAgent.py
 
