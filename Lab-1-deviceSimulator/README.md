@@ -149,10 +149,13 @@ At this point, you can see that the raspberry row has a lot of output, and that 
 
 Now we can use the AWS IoT console to go to the thing shadow to see the Raspberry Pi uploaded to the AWS IoT platform data.
 
+![Connect AWS IoT](./images/sensordata.jpeg)
+
 1. Open the AWS IoT Console
 2. Select Manage on the left => Things
 3. Click on the shadow of the thing you created in the previous section
 
+![Thing Shadow ](./images/thingshadow.jpeg)
 
 
 
