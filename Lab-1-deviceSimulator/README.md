@@ -14,6 +14,9 @@ In this demo, your must create Thing that name is *"raspberry<XX>"*
 [http://docs.aws.amazon.com/iot/latest/developerguide/create-device-certificate.html](http://docs.aws.amazon.com/iot/latest/developerguide/create-device-certificate.html)
 > download all certificates, some certificates won't be allow to download after this page close.
 
+![create certificates](./images/create-cert.jpg)
+
+After completing this section, you should above three files (certificate.pem, private.pem.key, and rootCA.cert) in the local ~/cert file, which will be used for subsequent connections to the AWS IoT platform. In addition, you can see the certificate, security policy, device shadow you created in the AWS IoT console. AWS provides different solutions for customers with different needs. In actual production, you can use a familiar programming language SDK to use different device registration methods according to your own situation.
 
 * Create an AWS IoT Policy
 
@@ -27,38 +30,37 @@ In this demo, your must create Thing that name is *"raspberry<XX>"*
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/attach-cert-thing.html](http://docs.aws.amazon.com/iot/latest/developerguide/attach-policy-to-certificate.html)
 
-完成这一节后，您会在本地cert 文件中看到三个文件(certificate.pem, private.pem.key和rootCA.cert)，这三个文件将用于后续连接到AWS IoT平台。此外，还可以在AWS IoT 控制台看到您所创建的证书，安全策略，设备影子。AWS 为不同需求的客户提供了不同的解决方案，在实际生产中，您可以选用熟悉的编程语言SDK，根据自己的情况使用不同的设备注册方式。
 
 Optionally you can put your cert file in the same directory: ~/cert
 
 ## Configure Your Raspberry Pi
 
-#### 把传感器和二极管接入到树莓派
+#### Connect sensor and diode to Raspberry Pi
 
-* 首先介绍一下DHT11：
+* **DHT11**：
 
-DHT11是一个温湿度传感器，分为3个接口，分别为：VCC（+ 正极）, DATA, GND（- 负极）
+DHT11 is a temperature and humidity sensor, divided into three interfaces, namely: VCC (+ positive), DATA, GND (- negative)
 
-VCC | 电源| +级，输入3V-5.5V|
+VCC | Power | +, input 3V-5.5V |
 
-DATA | 数据输出| 输出引脚|
+DATA | Data Output | Output Pins |
 
-GND | 接地 | -级别，接地引脚|
+GND | Ground | -, Ground Pin |
 
 
-DHT11接线说明
+DHT11 wiring instructions
 
-1. VCC接上3V3，可以选择1口或者17口
-2. DATA接上GPIO口，我选的是**GPIO2**，第3口
-3. GND接上接地口，我选的是第14口
+1. VCC connected to 3V3, you can choose 1 or 17
+2. DATA connected to the GPIO port, I chose GPIO2, the third port
+3. GND is connected to the ground, and I chose the 14th port
 
 ![DHT11-GPIO2](./images/DHT11-GPIO2.png)
 
-把二极管接入到**GPIO3**
+Connect the diode to **GPIO3**
 
 ![GPIO3.png](./images/GPIO3.png)
 
-请注意二极管分为正负极，长的一端为正极，短的一端为负极。
+Please note that the diode is divided into positive and negative electrodes, the long end is positive, and the short end is negative.
 
 ### Copy Cert file to raspberry pi 
 
@@ -101,47 +103,45 @@ mv ~/cert ~/aws-iot-labs/Lab-1-deviceSimulator
 Make sure that every time you enter the same thing name (Thing Name) (raspberry<XX>)
 
 
-## 把树莓派接入到AWS IoT
+## Connect Raspberry Pi to AWS IoT
 
-完成以上设备注册操作之后，就可以使用MQTT 连接到AWS IoT了。之后就可以远程看到本地传感器设备的状态了，甚至通过web 界面控制二极管开关。
-
-首先切换到 aws-iot-raspberrypi 目录
+Switch to aws-iot-raspberrypi directory
 
 ```
-cd ..
+cd ~/aws-iot-labs/Lab-1-deviceSimulator
 ```
 
-安装AWS IoT SDK
+install AWS IoT SDK
 
 ```
 sudo pip install AWSIoTPythonSDK
 ```
 
-修改连接文件配置，我们通过vim 来编辑这个文件
+Modify the ThingShadowAgent.py file configuration, we will edit this file via vi
 
 ```
 vi ThingShadowAgent.py
 ```
 
-endpoint：登录您的 AWS IoT 控制台(https://console.amazonaws.cn/iot/home?region=cn-north-1#/settings)， 选择左边的设置，页面中的终端节点就是endpoint，对于每个AWS 账户这是唯一的。
+endpoint：Login to your AWS IoT console, Select the settings on the left. The endpoint on the page is the endpoint. This is unique for each area of each AWS account.
 
-thingName：**raspberry<组号>（上述注册设置的组名）**
+thingName：**raspberry<XX>**
 
-topic：”**raspberry<组号>/sensor/data”**
+topic：”**raspberry<XX>/sensor/data”**
 
-运行连接文件
+Running ThingShadowAgent.py
 
 ```
 python ThingShadowAgent.py
 ```
 
-此时您可以看到树莓排有大量输出，并提示已经连接成功，发送MQTT数据了。
+At this point, you can see that the raspberry row has a lot of output, and that the connection has been successful, sending MQTT data.
 
-现在我们可以通过AWS IoT 控制台，到事物影子查看树莓派上传到AWS IoT平台数据 。
+Now we can use the AWS IoT console to go to the thing shadow to see the Raspberry Pi uploaded to the AWS IoT platform data.
 
-1. 打开AWS IoT 控制台
-2. 选择左边管理 => 事物
-3. 点击您在上一节中创建的事物影子
+1. Open the AWS IoT Console
+2. Select Manage on the left => Things
+3. Click on the shadow of the thing you created in the previous section
 
 
 
