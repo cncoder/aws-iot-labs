@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <style>
+                body {
+                  font-family: Tahoma, Geneva, sans-serif;
+                }
+          
+                div {
+                  display: inline;
+                }
+              </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A web interface for MQTT over Websockets">
+    <meta name="author" content="Fabian Affolter">
+
+    <title>AWS IoT Raspberry Sensor Demo</title>
+    
+    <!-- jQuery -->
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    
+        <!-- Bootstrap core CSS -->
+        
+    <link href="https://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/toastr.js/latest/toastr.min.js"></script>
+    
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.js"></script>
+    
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://unpkg.com/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" rel="stylesheet">
+
+    <script src="js/main.js"></script>
+    <script src="js/aws-sdk.min.js"></script>
+    <script src="js/iot.js"></script>
+    <script src="js/moment.js"></script>
+    <script type="text/javascript" src="js/cryptojslib/rollups/sha256.js"></script>
+    <script type="text/javascript" src="js/cryptojslib/rollups/hmac-sha256.js"></script>
+    <script type="text/javascript" src="js/paho-mqtt-js/mqttws31.js"></script>
+   
+    <script>
+        var raspberryPi;
+        $(document).ready(function() {
+             $(".modal").show();
+             raspberryPi = new IoTThing();
+             raspberryPi.buildConnection();
+             raspberryPi.client.on('connected', function(){
+               console.log('connected');
+               console.log(raspberryPi.thingName)
+               raspberryPi.client.subscribe(raspberryPi.thingName +'/sensor/data');
+             });
+             raspberryPi.client.on('subscribeFailed', function(e){
+               console.log('subscribeFailed ' + e);
+             });
+             raspberryPi.client.on('subscribeSucess', function(){
+               console.log('subscribeSucess');
+               // raspberryPi.getData();
+               //$(".modal").hide();
+             });
+             
+             raspberryPi.client.on('publishFailed', function(e){
+               console.log('publishFailed');
+             });
+             raspberryPi.client.on('messageArrived', function(msg){
+                 console.log('messageArrived '+ msg);
+                 var raspberryState = JSON.parse(msg.payloadString).state.reported;
+                 if(raspberryState.mois!=undefined){
+                    updateStats(raspberryState);
+                 }
+                 
+             }); 
+ 
+             $('#robotIsOn').click(function() {
+               if($('#robotIsOn').prop('checked')){
+                 $('#robotIsOn').prop('checked',false);
+                 raspberryPi.sendData("on");
+               }
+               else{
+                 $('#robotIsOn').prop('checked',true);
+                 raspberryPi.sendData("off");
+               }
+                 
+             }); 
+
+             $('#subthres').click(function() {
+                            var setthreshould = $('#moisthres').val();
+                            if(setthreshould!=null&&setthreshould>0 && setthreshould<100){
+                                raspberryPi.sendData(setthreshould);
+                                $('#moisthres').val('');
+				            //toastr["warning"]('Changing to '+ setthreshould +' temp...')
+                            }else{
+                            //toastr["warning"]('非法输入！')
+                            }
+             });
+             $('#switchoff').click(function() {
+                raspberryPi.sendData(99999);
+				//toastr["warning"]('Applying to power off...')
+                                
+             });
+             $('#switchon').click(function() {
+                raspberryPi.sendData(0);
+				 //toastr["warning"]('Applying to power on...')
+                                
+             });
+            $('.bootstrap-switch-off').click(function(){
+                console.log('click close')
+            })
+         })
+     </script>
+    <script type="text/javascript">
+        
+            $('#status').html('Connected to AWS IoT');
+           
+            $('#topic').html('AWS IoT Demo');
+            var entry = new Array();
+            var livingTemp = new Array();
+        
+        var tempstatus = "OFF"
+        function updateStats(message) {
+            var topic = 'topic>>>>';
+            console.log(message);
+            //console.log("Topic: " + topic + ", Message payload: " + payload);
+            //$('#message').html(topic + ', ' + payload);
+            //var message = topic.split('/');
+           // var area = message[1];
+            //var state = message[2];
+            //var timestamp = Math.round((new Date()).getTime() / 1000);
+            
+                
+                    $('#value1').html('(亮度: ' + message.light + ')');
+                    $('#label1').text(message.light);
+                    if (message.light >200) {
+                        $('#label1').removeClass('label-danger').addClass('label-success');
+                    } else {
+                        $('#label1').removeClass('label-success').addClass('label-danger');
+                    }
+                    $('#value2').html('(空气湿度: ' + message.mois + ')');
+                    $('#label2').text(message.mois);
+                    if (message.mois>30&&message.mois<400) {
+                        $('#label2').removeClass('label-danger').addClass('label-success');
+                    } else {
+                        $('#label2').removeClass('label-success').addClass('label-danger');
+                    }
+                    if(message.threshould>0 & message.threshould < 100){
+                        $('#livingTempSensor').html('(阈值: ' + message.threshould + ')');
+                        $('#livingTempLabel').text(message.threshould);
+                    }
+                    else{
+                        $('#livingTempSensor').html('(阈值: 手动)');
+                        $('#livingTempLabel').text('手动控制模式已启动');
+                    }
+                    
+                    $('#livingTempLabel').removeClass('').addClass('label-default');
+                    
+                    var status = message.status;
+                    $('#status').html('(二极管状态: ' + status + ')');
+                    $('#label3').text(status);
+                    if(tempstatus!=status){
+                        tempstatus = status;
+                        if(status=="ON") toastr["warning"]('二极管已经被打开.')
+                        else toastr["success"]('The switch is closed')
+                    }
+                    
+                    if(status=="OFF") {
+                        $('#label3').removeClass('label-danger').addClass('label-success');
+                        $('#watering').hide(2000);
+                    } else {
+                        $('#label3').removeClass('label-success').addClass('label-danger');
+                        $('#watering').show(1500);
+                    }
+                    
+                    var payload =message.temp
+                    if(payload!=undefined){
+                        
+                    $('#basementTempSensor').html('(温度: ' + payload + ')');
+                    if (payload >= 25) {
+                            $('#basementTempLabel').text(payload + '°C - too hot');
+                            $('#basementTempLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
+                    } else if (payload >= 21) {
+                            $('#basementTempLabel').text(payload + '°C - hot');
+                            $('#basementTempLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
+                    } else if (payload >= 18) {
+                            $('#basementTempLabel').text(payload + '°C - normal');
+                            $('#basementTempLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
+                    } else if (payload >= 15) {
+                            $('#basementTempLabel').text(payload + '°C - low');
+                            $('#basementTempLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
+                    } else{
+                            $('#basementTempLabel').text(payload + '°C - too low');
+                            $('#basementTempLabel').removeClass('label-danger label-warning label-success label-info').addClass('label-primary');
+                    
+                    }
+                    }
+                    
+            }
+        
+        $(document).ready(function() {
+            // var host = window.document.location.host.replace(/:.*/, '');
+            // var ws = new WebSocket('ws://' + host + ':80');
+            // ws.onmessage = function (event) {
+            //     var resdata = JSON.stringify(event.data)
+            //     var resdata = JSON.parse(resdata)
+            //     console.log(event.data)
+            //     console.log(typeof(event.data))
+            //     if(typeof(event.data)=='string'){
+            //         updateStats(JSON.parse(event.data));
+            //     }
+                
+            // };
+           
+        });
+    </script>
+
+  </head>
+
+  <body>
+        
+    <div id="wrap">
+      <div>
+        <div class="page-header"><h2><b> AWS IoT Raspberry Pi Demo</b></h2></div>
+        
+        <div id="watering" style="display: none !important;" >
+        <br>
+        <div class="alert alert-warning" role="alert">二极管已经被打开.</div>
+        <br>
+        </div>
+              <div class="panel-body">
+                    <table class="table table-striped">
+                        <tr>
+                            <td width="40%" style="vertical-align:middle;"><h3>Temperature</h3><small id="basementTempSensor">(no value recieved)</small></td>
+                            <td style="vertical-align:middle;"><span class="basementTempSparkline"></span></td>
+                            <td width="30%" style="vertical-align:middle;"><h4>&nbsp;<span id="basementTempLabel" class="label">Offline</span></h4></td>
+                            </tr>
+
+                        <tr>
+                        <td width="40%" style="vertical-align:middle;"><h3>Light</h3><small id="value1">(no value recieved)</small></td>
+                        <td style="vertical-align:middle;"></td>
+                        <td width="30%" style="vertical-align:middle;"><h4>&nbsp;<span id="label1" class="label">Offline</span></h4></td>
+                        </tr>
+                        <tr>
+                        <td width="40%" style="vertical-align:middle;"><h3>Moisture</h3><small id="value2">(no value recieved)</small></td>
+                        <td style="vertical-align:middle;"></td>
+                        <td width="30%" style="vertical-align:middle;"><h4>&nbsp;<span id="label2" class="label">Offline</span></h4></td>
+                        </tr>
+                        <tr>
+                        <td width="40%" style="vertical-align:middle;"><h3>Threshould</h3><small id="livingTempSensor">(no value recieved)</small></td>
+                        <td style="vertical-align:middle;"><div id="livingTempChart" style="height:80px; width:180px;"></div></td>
+                        <td width="30%" style="vertical-align:middle;"><h4>&nbsp;<span id="livingTempLabel" class="label">Offline</span></h4></td>
+                        </tr>
+                        <tr>
+                            <td width="40%" style="vertical-align:middle;"><h3>Switch</h3><small id="status">(no value recieved)</small></td>
+                            <td style="vertical-align:middle;"></td>
+                            <td width="30%" style="vertical-align:middle;"><h4>&nbsp;<span id="label3" class="label">Offline</span></h4></td>
+                            </tr>
+                    </table>
+
+                    <div>
+                    
+                    <form class="form-inline" onsubmit="return false">
+                        <div class="form-group">
+                          <label class="sr-only" for="exampleInputAmount">Please input your desire threshould value:</label>
+                          <div class="input-group">
+                            <div class="input-group-addon">自动调节模式：(threshould)</div>
+                            <input type="text" class="form-control" id="moisthres" placeholder="Input Value">
+                            <div class="input-group-addon">(°C 温度)</div>
+                          </div>
+                        </div>
+                        <button type="submit" id ="subthres" class="btn btn-primary">Submit</button>
+                      </form>
+                      <!-- Indicates a successful or positive action -->
+
+                    </div>
+                    <p></p>
+                    
+                    <!-- Indicates a successful or positive action -->
+<button type="button" id = "switchoff" class="btn btn-success">OFF</button>
+
+<!-- Indicates a dangerous or potentially negative action -->
+<button type="button" id = "switchon" class="btn btn-danger">ON</button>
+
+              </div>
+            
+              
+              <p></p>
+
+          <div class="panel-body">
+              <div class="row">
+                <!--<div class="col-md-6"><b>Latest MQTT message:  </b> <small id="message">no message recieved</small></div>
+                <div class="col-md-6"><b>Status: </b>  <small id='status'></small></div> -->
+              </div>
+          </div>
+        
+            
+      <div class="footer">
+        <small><p class="text-center">&copy; <a href="mailto:baizhenx@amazon.com?subject=IoTDeviceFAQ">2017, Amazon Web Services, Inc.</a>All rights reserved.</p></small>
+    </div>
+  </body>
+</html>
