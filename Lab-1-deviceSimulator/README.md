@@ -82,7 +82,7 @@ Raspberry Pi default SSH account password:
 Now you can use rsync to move your cert file to your raspberry pi.
 
 ```
-rsync -r ~/cert/ pi@<your_ip_address>:~/
+rsync -r ~/cert pi@<your_ip_address>:~/
 ```
 
 After login to Raspberry Pi, please install Git

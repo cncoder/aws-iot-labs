@@ -1,8 +1,30 @@
 ## Remotely view sensor data and control devices over Websockets
 
+### Create IAM User to connect AWS IoT
+
+We need to create a user for this Lab. The first role will be an instance profile that we will launch security monkey into. The permissions on this user allow the webpage to use websockets to connect to AWS IoT.
+
+Creating the IAM User
+
+1. To create a new user, navigate to the IAM section of the AWS console. Once there, select "Users": 
+
+![iamUser1](./img/iamUsers1.jpeg)
+
+2. Once there, click "Create user": 
+
+![iamUser2](./img/iamUsers2.jpeg)
+
+![iamUser3](./img/iamUsers3.jpeg)
+
+3. You will be asked to attach a (managed) policy (Attach Policy page). Please select the "AWSIoTFullAccess":
+
+![iamUser4](./img/iamUsers4.jpeg)
+
+4. Save Access key ID
 
 
-Download Lab2 Code on your Laptop:
+At this point, you now have a new IAM user named raspberrylab.
+### Download Lab2 Code on your Laptop:
 
 ```
 cd ~
