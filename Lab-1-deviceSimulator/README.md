@@ -3,7 +3,7 @@
 
 You should create resource on AWS console.
 
-###  Register a Device in the Thing Registry
+###  1. Register a Device in the Thing Registry
 
 In this demo, your must create Thing that name is **"raspberry\<XX\>"**
 
@@ -13,13 +13,13 @@ In this demo, your must create Thing that name is **"raspberry\<XX\>"**
 
 ![create things](./images/create-things2.jpeg)
 
-### Create an AWS IoT Policy
+### 2. Create an AWS IoT Policy
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/create-iot-policy.html](http://docs.aws.amazon.com/iot/latest/developerguide/create-iot-policy.html)
 
 ![create policy](./images/create-policy.jpeg)
 
-### Create and Activate a Device Certificate and Active it.
+### 3. Create and Activate a Device Certificate and Active it.
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/create-device-certificate.html](http://docs.aws.amazon.com/iot/latest/developerguide/create-device-certificate.html)
 > download all certificates, some certificates won't be allow to download after this page close.
@@ -28,7 +28,7 @@ In this demo, your must create Thing that name is **"raspberry\<XX\>"**
 
 After completing this section, you should save above three directory (certificate.pem, private.pem.key, and rootCA.cert) in the local ~/cert file, which will be used for subsequent connections to the AWS IoT platform. In addition, you can see the certificate, security policy, device shadow you created in the AWS IoT console. AWS provides different solutions for customers with different needs. Actually, in production, you can use a familiar programming language SDK to use different device registration methods according to your own situation.
 
-### Attach an AWS IoT Policy to a Device Certificate
+### 4. Attach an AWS IoT Policy to a Device Certificate
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/attach-policy-to-certificate.html](http://docs.aws.amazon.com/iot/latest/developerguide/attach-policy-to-certificate.html)
 
@@ -36,7 +36,7 @@ After completing this section, you should save above three directory (certificat
 
 ![create certificates](./images/attach-policy2.jpeg)
 
-### Optionally: Attach a Certificate to a Thing
+### 5. Optionally: Attach a Certificate to a Thing
 
 [http://docs.aws.amazon.com/iot/latest/developerguide/attach-cert-thing.html](http://docs.aws.amazon.com/iot/latest/developerguide/attach-policy-to-certificate.html)
 
@@ -69,7 +69,7 @@ Connect the diode to **GPIO3**
 
 Please note that the diode is divided into positive and negative electrodes, the long end is positive, and the short end is negative.
 
-### Copy Cert file to raspberry pi 
+### Copy certificates file to raspberry pi 
 
 After the Raspberry Pi system has been burned, connect the raspberry to the network, find the Raspberry Pi IP address, and log in to the Raspberry Pi using VNC or SSH.
 
@@ -79,19 +79,19 @@ Raspberry Pi default SSH account password:
 
 **Password：raspberry**
 
-Now you can use rsync to move your cert file to your raspberry pi.
+1. Now you can use rsync to move your cert file to your raspberry pi.
 
 ```
 rsync -r ~/cert pi@<your_ip_address>:~/
 ```
 
-After login to Raspberry Pi, please install Git
+2. After login to Raspberry Pi, please install Git
 
 ```
 sudo apt-get install git
 ```
 
-Download the device code：
+3. Download the device code：
 
 ```
 cd ~
@@ -99,7 +99,7 @@ rm -r aws-iot-labs (option)
 git clone https://github.com/cncoder/aws-iot-labs.git
 ```
 
-Copy cert file to the aws-iot-labs/Lab-1-deviceSimulator directory
+4. Copy cert file to the aws-iot-labs/Lab-1-deviceSimulator directory
 
 ```
 mv ~/cert ~/aws-iot-labs/Lab-1-deviceSimulator
@@ -112,19 +112,19 @@ Make sure that every time you enter the same thing name (Thing Name) (raspberry<
 
 ## Connect Raspberry Pi to AWS IoT
 
-Switch to aws-iot-raspberrypi directory
+1. Switch to aws-iot-raspberrypi directory
 
 ```
 cd ~/aws-iot-labs/Lab-1-deviceSimulator
 ```
 
-install AWS IoT SDK
+2. install AWS IoT SDK
 
 ```
 sudo pip install AWSIoTPythonSDK
 ```
 
-Modify the ThingShadowAgent.py file configuration, we will edit this file via vi
+3. Modify the ThingShadowAgent.py file configuration, we will edit this file via vi
 
 ```
 vi ThingShadowAgent.py
@@ -139,7 +139,7 @@ vi ThingShadowAgent.py
 
 **topic**：”**raspberry\<XX\>/sensor/data”**
 
-Running ThingShadowAgent.py
+5. Running ThingShadowAgent.py
 
 ```
 python ThingShadowAgent.py
