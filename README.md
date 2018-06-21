@@ -1,6 +1,7 @@
 # aws-iot-hands-on lab with raspberry
 Examples using AWS IoT (Internet of Things)
 
+[![Documentation Status](https://img.shields.io/badge/中文文档-最新-brightgreen.svg)](https://github.com/cncoder/aws-iot-labs/blob/master/README.cn.md)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
 
 ### Lab1
